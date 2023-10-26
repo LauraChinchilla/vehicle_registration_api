@@ -22,7 +22,7 @@ const db = pgp({
 db.connect()
   .then(obj => {
     console.log('Conexión a la base de datos exitosa');
-    obj.done(); // Importante liberar la conexión cuando ya no la necesitas.
+    obj.done();
   })
   .catch(error => {
     console.error('Error al conectar a la base de datos:', error);
@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
 
 
 // Ruta para crear un nuevo vehículo
-app.post('/api/vehiculos', async (req, res) => {
+app.post('/api/vehiculos/crear', async (req, res) => {
   const { marca, modelo, placa } = req.body;
   try {
     const newVehicle = await db.one('INSERT INTO vehiculos(marca, modelo, placa) VALUES($1, $2, $3) RETURNING *', [marca, modelo, placa]);
@@ -47,7 +47,7 @@ app.post('/api/vehiculos', async (req, res) => {
 });
 
 // Ruta para actualizar un vehículo existente
-app.put('/api/vehiculos/:id', async (req, res) => {
+app.put('/api/vehiculos/edit/:id', async (req, res) => {
   const { id } = req.params;
   const { marca, modelo, placa } = req.body;
   try {
@@ -59,7 +59,7 @@ app.put('/api/vehiculos/:id', async (req, res) => {
 });
 
 // Ruta para eliminar un vehículo
-app.delete('/api/vehiculos/:id', async (req, res) => {
+app.delete('/api/vehiculos/delete/:id', async (req, res) => {
   const { id } = req.params;
   try {
     await db.none('DELETE FROM vehiculos WHERE id=$1', [id]);
@@ -70,7 +70,7 @@ app.delete('/api/vehiculos/:id', async (req, res) => {
 });
 
 // Ruta para obtener una lista de todos los vehículos
-app.get('/api/vehiculos', async (req, res) => {
+app.get('/api/vehiculos/lista', async (req, res) => {
   try {
     const vehicles = await db.any('SELECT * FROM vehiculos');
     res.json(vehicles);
