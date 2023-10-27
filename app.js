@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
-const port = 4000; // Puerto en el que se ejecutará tu servidor
+const port = 4000; 
 app.use(cors()); // Habilita CORS
 
 // Configura el middleware para parsear JSON y datos de formularios
@@ -80,6 +80,21 @@ app.put("/api/vehiculos/edit/:id", async (req, res) => {
   }
 });
 
+// Ruta para actualizar una salida
+app.put("/api/salidas/edit/:id", async (req, res) => {
+  const { id } = req.params;
+  const { placa, nombre_motorista, fecha, hora, kilometraje } = req.body;
+  try {
+    await db.one(
+      "UPDATE salidas SET nombre_motorista=$1, fecha=$2, hora=$3, kilometraje=$4 placa=$5 WHERE id=$6 RETURNING *",
+      [nombre_motorista, fecha, hora, kilometraje,placa, id]
+    );
+    res.json({ message: "Salida eliminada con éxito." });
+  } catch (error) {
+    res.status(500).json({ error: "No se pudo actualizar la salida." });
+  }
+});
+
 // Ruta para eliminar un vehículo
 app.delete("/api/vehiculos/delete/:id", async (req, res) => {
   const { id } = req.params;
@@ -88,6 +103,21 @@ app.delete("/api/vehiculos/delete/:id", async (req, res) => {
     res.json({ message: "Vehículo eliminado con éxito." });
   } catch (error) {
     res.status(500).json({ error: "No se pudo eliminar el vehículo." });
+  }
+});
+
+// Ruta para actualizar una entrada
+app.put("/api/entradas/edit/:id", async (req, res) => {
+  const { id } = req.params;
+  const { placa, nombre_motorista, fecha, hora, kilometraje } = req.body;
+  try {
+    const updatedEntry = await db.one(
+      "UPDATE entradas SET nombre_motorista=$1, fecha=$2, hora=$3, kilometraje=$4, placa=$5 WHERE id=$6 RETURNING *",
+      [nombre_motorista, fecha, hora, kilometraje, placa, id]
+    );
+    res.json(updatedEntry);
+  } catch (error) {
+    res.status(500).json({ error: "No se pudo actualizar la entrada." });
   }
 });
 
