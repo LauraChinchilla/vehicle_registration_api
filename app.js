@@ -60,8 +60,6 @@ app.post("/api/vehiculos/crear", async (req, res) => {
 app.put("/api/vehiculos/edit/:id", async (req, res) => {
   const { id } = req.params;
   const { marca, modelo, placa } = req.body;
-
-  // Verifica si ya existe un vehículo con la misma placa, excluyendo el vehículo actual
   const existingVehicle = await db.oneOrNone(
     "SELECT * FROM vehiculos WHERE placa = $1 AND id <> $2",
     [placa, id]
@@ -105,29 +103,30 @@ app.get("/api/vehiculos/lista", async (req, res) => {
 
 // Ruta para registrar una entrada de un vehículo
 app.post("/api/entradas", async (req, res) => {
-  const { vehiculoId, nombre_motorista, fecha, hora, kilometraje } = req.body;
+  const { placa, nombre_motorista, fecha, hora, kilometraje } = req.body;
   try {
     const newEntryExit = await db.one(
-      "INSERT INTO entradas(vehiculo_id, nombre_motorista, fecha, hora, kilometraje) VALUES($1, $2, $3, $4, $5) RETURNING *",
-      [vehiculoId, nombre_motorista, fecha, hora, kilometraje]
+      "INSERT INTO entradas(nombre_motorista, fecha, hora, kilometraje, placa) VALUES($1, $2, $3, $4, $5) RETURNING *",
+      [nombre_motorista, fecha, hora, kilometraje, placa]
     );
     res.json(newEntryExit);
+    // console.log('Nueva Entrada: ', newEntryExit)
   } catch (error) {
-    res.status(500).json({ error: "No se pudo registrar la entrada." });
+    res.status(200).json({ error: "No se pudo registrar la entrada." });
   }
 });
 
 
-
-// Ruta para registrar una salida de un vehículo
+// Ruta para registrar una entrada de un vehículo
 app.post("/api/salidas", async (req, res) => {
-  const { vehiculoId, motorista, fecha, hora, kilometraje } = req.body;
+  const { placa, nombre_motorista, fecha, hora, kilometraje } = req.body;
   try {
-    const newEntryExit = await db.one(
-      "INSERT INTO salidas(vehiculo_id, motorista, fecha, hora, kilometraje) VALUES($1, $2, $3, $4, $5) RETURNING *",
-      [vehiculoId, motorista, fecha, hora, kilometraje]
+    const newExit = await db.one(
+      "INSERT INTO salidas(nombre_motorista, fecha, hora, kilometraje, placa) VALUES($1, $2, $3, $4, $5) RETURNING *",
+      [nombre_motorista, fecha, hora, kilometraje, placa]
     );
-    res.json(newEntryExit);
+    res.json(newExit);
+    console.log('Nueva Entrada: ', newExit)
   } catch (error) {
     res.status(500).json({ error: "No se pudo registrar la salida." });
   }
