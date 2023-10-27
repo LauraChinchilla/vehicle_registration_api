@@ -91,6 +91,29 @@ app.delete("/api/vehiculos/delete/:id", async (req, res) => {
   }
 });
 
+// Ruta para eliminar una entrada
+app.delete("/api/entradas/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.none("DELETE FROM entradas WHERE id=$1", [id]);
+    res.json({ message: "Entrada eliminada con éxito." });
+  } catch (error) {
+    res.status(500).json({ error: "No se pudo eliminar la entrada." });
+  }
+});
+
+// Ruta para eliminar una salida
+app.delete("/api/salidas/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.none("DELETE FROM salidas WHERE id=$1", [id]);
+    res.json({ message: "Salida eliminada con éxito." });
+  } catch (error) {
+    res.status(500).json({ error: "No se pudo eliminar la salida." });
+  }
+});
+
+
 // Ruta para obtener una lista de todos los vehículos
 app.get("/api/vehiculos/lista", async (req, res) => {
   try {
